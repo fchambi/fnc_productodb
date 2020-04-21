@@ -15,7 +15,7 @@ namespace fnc_productodb
 {
     public  class SacarProducto
     {
-
+        //Funcion parecida al ingresar solo que descuenta del almacen la cantidad a retirar
         [FunctionName(nameof(SacarProducto))]
         public async Task<IActionResult> UpdateTaskItem(
             [HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "SacarProducto/{id}")]HttpRequest req,
@@ -27,39 +27,31 @@ namespace fnc_productodb
             ILogger logger,
             string id)
         {
-
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-
             var option = new FeedOptions { EnableCrossPartitionQuery = true };
-
             var updatedTask = JsonConvert.DeserializeObject<Product>(requestBody);
-
             Uri taskCollectionUri = UriFactory.CreateDocumentCollectionUri(Constants.COSMOS_DB_DATABASE_NAME, Constants.COSMO_DB_CONTAINER_NAME);
 
-            var document = client.CreateDocumentQuery(taskCollectionUri, option)
-                .Where(t => t.Id == id)
+            var document = client.CreateDocumentQuery(taskCollectionUri, option) //Obtiene tods los datos
+                .Where(t => t.Id == id) // busca el deseado
                 .AsEnumerable()
                 .FirstOrDefault();
 
-            if (document == null)
+            if (document == null)//VErifica que exista
             {
                 logger.LogError($"Producto {id} not found. It may not exist!");
                 return new NotFoundResult();
             }
-            int dato = document.GetPropertyValue<int>("Cantidad");
-            if (dato < updatedTask.Cantidad)
+            int dato = document.GetPropertyValue<int>("Cantidad");//Obtiene el valor del almacen
+            if (dato <= updatedTask.Cantidad) // VErifica si existe suficiente cantidad para reitrar
             {
                 logger.LogError($"Producto {id} no tiene suficiente cantidad para ese retiro");
                 return new NotFoundResult();
             }
-            dato = dato - updatedTask.Cantidad;
-            document.SetPropertyValue("Cantidad", dato);
-
-
+            dato = dato - updatedTask.Cantidad; // En caso de qeui exista la cantidad para retirar
+            document.SetPropertyValue("Cantidad", dato);//Actuliza los datos del almacne
             await client.ReplaceDocumentAsync(document);
-
             Product updatedTaskItemDocument = (dynamic)document;
-
             return new OkObjectResult(updatedTaskItemDocument);
         }
     }

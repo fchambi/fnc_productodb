@@ -21,15 +21,16 @@ namespace fnc_productodb
                         databaseName:Constants.COSMOS_DB_DATABASE_NAME,
                         collectionName:Constants.COSMO_DB_CONTAINER_NAME,
                         ConnectionStringSetting = "StrCosmos",
-                        SqlQuery ="SELECT * FROM c where c.id={id}"
+                        SqlQuery ="SELECT * FROM c where c.id={id}" //En este caso ejecutamos una sentencia SQL
             )]IEnumerable<Product> productItem,
             ILogger log,string id)
         {
-            if (productItem == null)
+            
+            if (productItem == null) //Verifica que exista el producto que consultamos
             {
+                log.LogError($"Producto {id} not found. It may not exist!");
                 return new NotFoundResult();
-            }
-
+            }    
             return new OkObjectResult(productItem);
         }
     }
