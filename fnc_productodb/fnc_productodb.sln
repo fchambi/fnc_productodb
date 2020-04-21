@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fnc_productodb", "fnc_productodb\fnc_productodb.csproj", "{A6B97DA6-A5DF-4692-B49A-B2DF2C70F42F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "fnc_productodb", "fnc_productodb\fnc_productodb.csproj", "{A6B97DA6-A5DF-4692-B49A-B2DF2C70F42F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

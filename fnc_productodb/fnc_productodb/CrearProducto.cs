@@ -9,12 +9,13 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using fnc_productodb.Models;
 using fnc_productodb.Helpers;
+
 namespace fnc_productodb
 {
     public  class CrearProducto
     {
         [FunctionName(nameof(CrearProducto))]
-        public async Task<IActionResult> Run(
+        public async Task<IActionResult>  Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             [CosmosDB(
                         databaseName:Constants.COSMOS_DB_DATABASE_NAME,
@@ -23,9 +24,11 @@ namespace fnc_productodb
             )]  IAsyncCollector <object> products,
             ILogger log)
         {
+
             IActionResult returnvalue = null;
             try
             {
+                
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var data = JsonConvert.DeserializeObject<Product>(requestBody);
                 var product = new Product
@@ -37,6 +40,7 @@ namespace fnc_productodb
                     Cantidad = data.Cantidad
                 };
                 await products.AddAsync(product);
+                
                 log.LogInformation($"Item creado {product.Nombre}");
                 returnvalue = new OkObjectResult(product);
             }
